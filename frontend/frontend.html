@@ -1,0 +1,1281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Socially — Connect & Share</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --bg: #0a0a0f;
+      --surface: #13131a;
+      --surface2: #1c1c26;
+      --border: #2a2a38;
+      --accent: #7c6af7;
+      --accent2: #f76a8b;
+      --accent3: #6af7c8;
+      --text: #e8e8f0;
+      --text-muted: #7878a0;
+      --text-dim: #4a4a68;
+      --success: #6af7c8;
+      --error: #f76a8b;
+      --radius: 16px;
+      --radius-sm: 8px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* Background mesh */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 80% 50% at 20% -10%, rgba(124,106,247,0.12) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 40% at 80% 110%, rgba(247,106,139,0.08) 0%, transparent 60%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ============ LAYOUT ============ */
+    #app { position: relative; z-index: 1; }
+
+    /* ============ AUTH SCREEN ============ */
+    #auth-screen {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+
+    .auth-card {
+      width: 100%;
+      max-width: 420px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      overflow: hidden;
+      animation: slideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .auth-header {
+      padding: 40px 40px 32px;
+      text-align: center;
+      background: linear-gradient(135deg, rgba(124,106,247,0.15), rgba(247,106,139,0.08));
+      border-bottom: 1px solid var(--border);
+    }
+
+    .auth-logo {
+      font-family: 'Syne', sans-serif;
+      font-size: 2rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      letter-spacing: -0.5px;
+    }
+
+    .auth-tagline {
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      margin-top: 4px;
+    }
+
+    .auth-tabs {
+      display: flex;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .auth-tab {
+      flex: 1;
+      padding: 14px;
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.9rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+      position: relative;
+    }
+
+    .auth-tab.active {
+      color: var(--accent);
+    }
+
+    .auth-tab.active::after {
+      content: '';
+      position: absolute;
+      bottom: -1px;
+      left: 20%;
+      right: 20%;
+      height: 2px;
+      background: var(--accent);
+      border-radius: 2px;
+    }
+
+    .auth-body { padding: 32px 40px 40px; }
+
+    .form-group { margin-bottom: 18px; }
+
+    .form-group label {
+      display: block;
+      font-size: 0.8rem;
+      font-weight: 500;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 8px;
+    }
+
+    .form-group input {
+      width: 100%;
+      padding: 12px 16px;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.95rem;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      outline: none;
+    }
+
+    .form-group input:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(124,106,247,0.15);
+    }
+
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+    .btn-primary {
+      width: 100%;
+      padding: 13px;
+      background: linear-gradient(135deg, var(--accent), #9d8cf9);
+      border: none;
+      border-radius: var(--radius-sm);
+      color: white;
+      font-family: 'Syne', sans-serif;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      letter-spacing: 0.02em;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 8px 24px rgba(124,106,247,0.35);
+    }
+
+    .btn-primary:active { transform: translateY(0); }
+
+    /* ============ MAIN APP ============ */
+    #main-screen { display: none; min-height: 100vh; }
+
+    /* NAV */
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(10,10,15,0.85);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+      padding: 0 24px;
+    }
+
+    .nav-inner {
+      max-width: 1000px;
+      margin: 0 auto;
+      height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .nav-logo {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.3rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .nav-right { display: flex; align-items: center; gap: 8px; }
+
+    .nav-user {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 6px 14px 6px 6px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 40px;
+    }
+
+    .nav-avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Syne', sans-serif;
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: white;
+    }
+
+    .nav-username {
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: var(--text);
+    }
+
+    .btn-nav {
+      padding: 8px 16px;
+      background: none;
+      border: 1px solid var(--border);
+      border-radius: 40px;
+      color: var(--text-muted);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .btn-nav:hover { color: var(--text); border-color: var(--text-muted); }
+
+    .btn-nav.danger:hover { color: var(--error); border-color: var(--error); }
+
+    /* MAIN LAYOUT */
+    .app-layout {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 32px 24px;
+      display: grid;
+      grid-template-columns: 300px 1fr;
+      gap: 28px;
+      align-items: start;
+    }
+
+    /* SIDEBAR */
+    .sidebar { display: flex; flex-direction: column; gap: 20px; position: sticky; top: 96px; }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+
+    .card-header {
+      padding: 18px 20px 14px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .card-title {
+      font-family: 'Syne', sans-serif;
+      font-size: 0.85rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-muted);
+    }
+
+    .card-body { padding: 20px; }
+
+    /* CREATE POST */
+    .post-form-group { margin-bottom: 14px; }
+
+    .post-form-group label {
+      display: block;
+      font-size: 0.75rem;
+      font-weight: 500;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 6px;
+    }
+
+    .post-form-group input,
+    .post-form-group textarea,
+    .post-form-group select {
+      width: 100%;
+      padding: 10px 14px;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.9rem;
+      outline: none;
+      transition: border-color 0.2s;
+      resize: vertical;
+    }
+
+    .post-form-group select option { background: var(--surface2); }
+
+    .post-form-group input:focus,
+    .post-form-group textarea:focus,
+    .post-form-group select:focus {
+      border-color: var(--accent);
+    }
+
+    .post-form-group textarea { min-height: 90px; }
+
+    .btn-submit {
+      width: 100%;
+      padding: 11px;
+      background: linear-gradient(135deg, var(--accent), #9d8cf9);
+      border: none;
+      border-radius: var(--radius-sm);
+      color: white;
+      font-family: 'Syne', sans-serif;
+      font-size: 0.85rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+      letter-spacing: 0.03em;
+    }
+
+    .btn-submit:hover {
+      box-shadow: 0 4px 16px rgba(124,106,247,0.4);
+      transform: translateY(-1px);
+    }
+
+    /* FILTER PILLS */
+    .filter-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      padding: 16px 20px;
+    }
+
+    .pill {
+      padding: 6px 14px;
+      border-radius: 20px;
+      border: 1px solid var(--border);
+      background: none;
+      color: var(--text-muted);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.8rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .pill:hover { border-color: var(--accent); color: var(--accent); }
+
+    .pill.active {
+      background: rgba(124,106,247,0.15);
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    /* FEED */
+    .feed { display: flex; flex-direction: column; gap: 16px; }
+
+    .feed-tabs {
+      display: flex;
+      gap: 4px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 6px;
+    }
+
+    .feed-tab {
+      flex: 1;
+      padding: 9px;
+      border: none;
+      border-radius: calc(var(--radius) - 4px);
+      background: none;
+      color: var(--text-muted);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.85rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .feed-tab.active {
+      background: var(--surface2);
+      color: var(--text);
+    }
+
+    /* POST CARD */
+    .post-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 22px;
+      transition: border-color 0.2s, transform 0.2s;
+      animation: fadeIn 0.3s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .post-card:hover { border-color: var(--border); transform: translateY(-1px); }
+
+    .post-meta {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 14px;
+    }
+
+    .post-author {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .post-avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Syne', sans-serif;
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: white;
+      flex-shrink: 0;
+    }
+
+    .post-author-info { display: flex; flex-direction: column; }
+
+    .post-author-name {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .post-time {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    .post-type-badge {
+      padding: 3px 10px;
+      border-radius: 20px;
+      font-size: 0.7rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .type-text { background: rgba(124,106,247,0.15); color: var(--accent); }
+    .type-thought { background: rgba(247,106,139,0.15); color: var(--accent2); }
+    .type-quote { background: rgba(106,247,200,0.15); color: var(--accent3); }
+    .type-link { background: rgba(247,200,106,0.15); color: #f7c86a; }
+
+    .post-title-text {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 8px;
+      line-height: 1.3;
+    }
+
+    .post-content {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      line-height: 1.6;
+      white-space: pre-wrap;
+    }
+
+    .post-actions {
+      display: flex;
+      gap: 8px;
+      margin-top: 16px;
+      padding-top: 16px;
+      border-top: 1px solid var(--border);
+    }
+
+    .btn-action {
+      padding: 6px 14px;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+      background: none;
+      color: var(--text-muted);
+      font-size: 0.8rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .btn-action:hover { color: var(--text); border-color: var(--text-muted); }
+
+    .btn-action.delete:hover { color: var(--error); border-color: var(--error); }
+
+    /* EMPTY STATE */
+    .empty-state {
+      text-align: center;
+      padding: 60px 24px;
+      color: var(--text-dim);
+    }
+
+    .empty-state i { font-size: 2.5rem; margin-bottom: 12px; display: block; }
+    .empty-state p { font-size: 0.9rem; }
+
+    /* TOAST */
+    #toast-wrap {
+      position: fixed;
+      bottom: 28px;
+      right: 28px;
+      z-index: 9999;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .toast {
+      padding: 12px 20px;
+      border-radius: 10px;
+      font-size: 0.85rem;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      animation: toastIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+      max-width: 320px;
+    }
+
+    @keyframes toastIn {
+      from { opacity: 0; transform: translateX(20px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+
+    .toast.success { background: rgba(106,247,200,0.15); border: 1px solid var(--accent3); color: var(--accent3); }
+    .toast.error { background: rgba(247,106,139,0.15); border: 1px solid var(--accent2); color: var(--accent2); }
+    .toast.info { background: rgba(124,106,247,0.15); border: 1px solid var(--accent); color: var(--accent); }
+
+    /* LOADING */
+    .loader {
+      display: flex;
+      justify-content: center;
+      padding: 40px;
+    }
+
+    .spinner {
+      width: 28px;
+      height: 28px;
+      border: 2px solid var(--border);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* MODAL */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.7);
+      backdrop-filter: blur(8px);
+      z-index: 500;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+
+    .modal {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      width: 100%;
+      max-width: 480px;
+      animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .modal-header {
+      padding: 20px 24px 16px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .modal-title {
+      font-family: 'Syne', sans-serif;
+      font-size: 1rem;
+      font-weight: 700;
+    }
+
+    .modal-close {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      border: 1px solid var(--border);
+      background: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+    }
+
+    .modal-close:hover { color: var(--text); }
+
+    .modal-body { padding: 24px; }
+
+    .modal-actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 20px;
+    }
+
+    .btn-modal-cancel {
+      flex: 1;
+      padding: 10px;
+      background: none;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      color: var(--text-muted);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-modal-cancel:hover { color: var(--text); border-color: var(--text-muted); }
+
+    .btn-modal-confirm {
+      flex: 1;
+      padding: 10px;
+      background: linear-gradient(135deg, var(--accent), #9d8cf9);
+      border: none;
+      border-radius: var(--radius-sm);
+      color: white;
+      font-family: 'Syne', sans-serif;
+      font-size: 0.9rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-modal-confirm:hover { box-shadow: 0 4px 16px rgba(124,106,247,0.4); }
+
+    .btn-modal-danger {
+      flex: 1;
+      padding: 10px;
+      background: rgba(247,106,139,0.15);
+      border: 1px solid var(--accent2);
+      border-radius: var(--radius-sm);
+      color: var(--accent2);
+      font-family: 'Syne', sans-serif;
+      font-size: 0.9rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-modal-danger:hover { background: rgba(247,106,139,0.25); }
+
+    /* CHAR COUNTER */
+    .char-counter {
+      text-align: right;
+      font-size: 0.72rem;
+      color: var(--text-dim);
+      margin-top: 4px;
+    }
+
+    .char-counter.warn { color: var(--accent2); }
+
+    /* RESPONSIVE */
+    @media (max-width: 700px) {
+      .app-layout { grid-template-columns: 1fr; }
+      .sidebar { position: static; }
+    }
+  </style>
+</head>
+<body>
+<div id="app">
+  <!-- TOAST -->
+  <div id="toast-wrap"></div>
+
+  <!-- AUTH -->
+  <div id="auth-screen">
+    <div class="auth-card">
+      <div class="auth-header">
+        <div class="auth-logo">Socially</div>
+        <div class="auth-tagline">Express yourself. Connect with others.</div>
+      </div>
+      <div class="auth-tabs">
+        <button class="auth-tab active" id="tab-login" onclick="switchTab('login')">Sign In</button>
+        <button class="auth-tab" id="tab-register" onclick="switchTab('register')">Register</button>
+      </div>
+
+      <!-- LOGIN -->
+      <div id="panel-login" class="auth-body">
+        <form id="login-form" onsubmit="handleLogin(event)">
+          <div class="form-group">
+            <label>Username</label>
+            <input type="text" id="login-username" placeholder="your_username" required autocomplete="username">
+          </div>
+          <div class="form-group">
+            <label>Password</label>
+            <input type="password" id="login-password" placeholder="••••••••" required autocomplete="current-password">
+          </div>
+          <button type="submit" class="btn-primary" id="login-btn">Sign In</button>
+        </form>
+      </div>
+
+      <!-- REGISTER -->
+      <div id="panel-register" class="auth-body" style="display:none;">
+        <form id="register-form" onsubmit="handleRegister(event)">
+          <div class="form-row">
+            <div class="form-group">
+              <label>Full Name</label>
+              <input type="text" id="reg-name" placeholder="John Doe" required>
+            </div>
+            <div class="form-group">
+              <label>Username</label>
+              <input type="text" id="reg-username" placeholder="johndoe" required>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Email</label>
+            <input type="email" id="reg-email" placeholder="john@example.com" required>
+          </div>
+          <div class="form-group">
+            <label>Password</label>
+            <input type="password" id="reg-password" placeholder="Create a strong password" required>
+          </div>
+          <button type="submit" class="btn-primary" id="reg-btn">Create Account</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- MAIN APP -->
+  <div id="main-screen">
+    <nav>
+      <div class="nav-inner">
+        <div class="nav-logo">Socially</div>
+        <div class="nav-right">
+          <div class="nav-user">
+            <div class="nav-avatar" id="nav-avatar">?</div>
+            <span class="nav-username" id="nav-username">User</span>
+          </div>
+          <button class="btn-nav danger" onclick="handleLogout()">
+            <i class="fa-solid fa-right-from-bracket"></i> Logout
+          </button>
+        </div>
+      </div>
+    </nav>
+
+    <div class="app-layout">
+      <!-- SIDEBAR -->
+      <aside class="sidebar">
+        <!-- Create Post -->
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">New Post</span>
+            <i class="fa-solid fa-pen" style="color: var(--accent); font-size:0.8rem;"></i>
+          </div>
+          <div class="card-body">
+            <form id="create-post-form" onsubmit="handleCreatePost(event)">
+              <div class="post-form-group">
+                <label>Type</label>
+                <select id="post-type" required>
+                  <option value="">Select type…</option>
+                  <option value="joke">Joke</option>
+                  <option value="thought">Thought</option>
+                  <option value="quote">Quote</option>
+                  <option value="information">Information</option>
+                </select>
+              </div>
+              <div class="post-form-group">
+                <label>Title</label>
+                <input type="text" id="post-title" placeholder="Give it a title…" maxlength="60" required>
+              </div>
+              <div class="post-form-group">
+                <label>Content</label>
+                <textarea id="post-content" placeholder="What's on your mind?" maxlength="500" required oninput="updateCharCount()"></textarea>
+                <div class="char-counter" id="char-counter">0 / 500</div>
+              </div>
+              <button type="submit" class="btn-submit">
+                <i class="fa-solid fa-paper-plane"></i> Publish
+              </button>
+            </form>
+          </div>
+        </div>
+
+        <!-- Filters -->
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">Filter</span>
+          </div>
+          <div class="filter-pills">
+            <button class="pill active" onclick="setFilter('all', this)">All</button>
+            <button class="pill" onclick="setFilter('joke', this)">Joke</button>
+            <button class="pill" onclick="setFilter('thought', this)">Thought</button>
+            <button class="pill" onclick="setFilter('quote', this)">Quote</button>
+            <button class="pill" onclick="setFilter('information', this)">Information</button>
+          </div>
+        </div>
+      </aside>
+
+      <!-- FEED -->
+      <main>
+        <div class="feed">
+          <div class="feed-tabs">
+            <button class="feed-tab active" id="tab-mine" onclick="switchFeed('mine')">
+              <i class="fa-solid fa-user"></i> My Posts
+            </button>
+            <button class="feed-tab" id="tab-all" onclick="switchFeed('all')">
+              <i class="fa-solid fa-globe"></i> Explore
+            </button>
+          </div>
+
+          <div id="feed-container">
+            <div class="loader"><div class="spinner"></div></div>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+</div>
+
+<!-- EDIT MODAL -->
+<div id="edit-modal" class="modal-backdrop" style="display:none;" onclick="closeEditModal(event)">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title">Edit Post</span>
+      <button class="modal-close" onclick="closeModal()"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div class="modal-body">
+      <form onsubmit="handleUpdatePost(event)">
+        <input type="hidden" id="edit-post-id">
+        <div class="post-form-group">
+          <label>Type</label>
+          <select id="edit-type" required>
+            <option value="joke">Joke</option>
+            <option value="thought">Thought</option>
+            <option value="quote">Quote</option>
+            <option value="information">Information</option>
+          </select>
+        </div>
+        <div class="post-form-group">
+          <label>Title</label>
+          <input type="text" id="edit-title" required maxlength="60">
+        </div>
+        <div class="post-form-group">
+          <label>Content</label>
+          <textarea id="edit-content" required maxlength="500"></textarea>
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="btn-modal-cancel" onclick="closeModal()">Cancel</button>
+          <button type="submit" class="btn-modal-confirm">Save Changes</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- DELETE CONFIRM MODAL -->
+<div id="delete-modal" class="modal-backdrop" style="display:none;" onclick="closeDeleteModal(event)">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title">Delete Post</span>
+      <button class="modal-close" onclick="closeDeleteModal()"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div class="modal-body">
+      <p style="color: var(--text-muted); font-size: 0.9rem;">Are you sure you want to delete this post? This action cannot be undone.</p>
+      <div class="modal-actions">
+        <button class="btn-modal-cancel" onclick="closeDeleteModal()">Cancel</button>
+        <button class="btn-modal-danger" onclick="confirmDelete()">Delete Post</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // ===== CONFIG =====
+  const BASE = "http://localhost:8000";
+  const TOKEN_KEY = "socially_token";
+  const USER_KEY = "socially_user";
+
+  let currentFeed = 'mine';
+  let currentFilter = 'all';
+  let pendingDeleteId = null;
+  let currentUsername = '';
+  let postsCache = {};
+
+  // ===== TOKEN =====
+  const getToken = () => localStorage.getItem(TOKEN_KEY);
+  const setToken = t => localStorage.setItem(TOKEN_KEY, t);
+  const clearToken = () => { localStorage.removeItem(TOKEN_KEY); localStorage.removeItem(USER_KEY); };
+
+  // ===== INIT =====
+  window.onload = () => {
+    if (getToken()) {
+      currentUsername = localStorage.getItem(USER_KEY) || '';
+      showApp();
+    }
+  };
+
+  // ===== AUTH TABS =====
+  function switchTab(tab) {
+    document.getElementById('panel-login').style.display = tab === 'login' ? 'block' : 'none';
+    document.getElementById('panel-register').style.display = tab === 'register' ? 'block' : 'none';
+    document.getElementById('tab-login').classList.toggle('active', tab === 'login');
+    document.getElementById('tab-register').classList.toggle('active', tab === 'register');
+  }
+
+  // ===== VIEWS =====
+  function showApp() {
+    document.getElementById('auth-screen').style.display = 'none';
+    document.getElementById('main-screen').style.display = 'block';
+    const initials = currentUsername.slice(0, 2).toUpperCase() || '??';
+    document.getElementById('nav-avatar').textContent = initials;
+    document.getElementById('nav-username').textContent = '@' + currentUsername;
+    loadFeed();
+  }
+
+  function showAuth() {
+    document.getElementById('main-screen').style.display = 'none';
+    document.getElementById('auth-screen').style.display = 'flex';
+  }
+
+  // ===== API =====
+  async function api(path, method = 'GET', body = null, isForm = false) {
+    const headers = {};
+    const token = getToken();
+    if (token) headers['Authorization'] = `Bearer ${token}`;
+    if (!isForm && body) headers['Content-Type'] = 'application/json';
+
+    const res = await fetch(`${BASE}${path}`, {
+      method,
+      headers,
+      body: isForm ? body : (body ? JSON.stringify(body) : null)
+    });
+
+    let data;
+    try { data = await res.json(); } catch { data = {}; }
+
+    if (!res.ok) throw new Error(data.detail || 'Something went wrong');
+    return data;
+  }
+
+  // ===== AUTH HANDLERS =====
+  async function handleLogin(e) {
+    e.preventDefault();
+    const btn = document.getElementById('login-btn');
+    btn.textContent = 'Signing in…'; btn.disabled = true;
+
+    const form = new URLSearchParams();
+    form.append('username', document.getElementById('login-username').value.trim());
+    form.append('password', document.getElementById('login-password').value);
+
+    try {
+      const data = await api('/login', 'POST', form, true);
+      setToken(data.access_token);
+      currentUsername = document.getElementById('login-username').value.trim();
+      localStorage.setItem(USER_KEY, currentUsername);
+      toast('Welcome back, @' + currentUsername + '!', 'success');
+      showApp();
+    } catch (err) {
+      toast(err.message, 'error');
+    } finally {
+      btn.textContent = 'Sign In'; btn.disabled = false;
+    }
+  }
+
+  async function handleRegister(e) {
+    e.preventDefault();
+    const btn = document.getElementById('reg-btn');
+    btn.textContent = 'Creating…'; btn.disabled = true;
+
+    try {
+      await api('/Register', 'POST', {
+        name: document.getElementById('reg-name').value.trim(),
+        username: document.getElementById('reg-username').value.trim(),
+        email: document.getElementById('reg-email').value.trim(),
+        password: document.getElementById('reg-password').value
+      });
+      toast('Account created! Please sign in.', 'success');
+      document.getElementById('register-form').reset();
+      switchTab('login');
+    } catch (err) {
+      toast(err.message, 'error');
+    } finally {
+      btn.textContent = 'Create Account'; btn.disabled = false;
+    }
+  }
+
+  function handleLogout() {
+    clearToken();
+    currentUsername = '';
+    showAuth();
+    toast('Logged out. See you soon!', 'info');
+  }
+
+  // ===== FEED =====
+  function switchFeed(type) {
+    currentFeed = type;
+    document.getElementById('tab-mine').classList.toggle('active', type === 'mine');
+    document.getElementById('tab-all').classList.toggle('active', type === 'all');
+    loadFeed();
+  }
+
+  function setFilter(type, btn) {
+    currentFilter = type;
+    document.querySelectorAll('.pill').forEach(p => p.classList.remove('active'));
+    btn.classList.add('active');
+    loadFeed();
+  }
+
+  async function loadFeed() {
+  const container = document.getElementById('feed-container');
+  container.innerHTML = '<div class="loader"><div class="spinner"></div></div>';
+
+  try {
+    let posts;
+
+    if (currentFeed === 'mine') {
+      posts = await api(`/post?username=${encodeURIComponent(currentUsername)}`);
+      if (currentFilter !== 'all') {
+        posts = posts.filter(p => p.content_type === currentFilter);
+      }
+    } else {
+      let url = `/posts`;
+      if (currentFilter !== 'all') {
+        url += `?content_type=${encodeURIComponent(currentFilter)}`;
+      }
+      posts = await api(url);
+    }
+
+    renderPosts(posts, container);
+
+  } catch (err) {
+    container.innerHTML = `<div class="empty-state"><i class="fa-solid fa-triangle-exclamation"></i><p>${err.message}</p></div>`;
+  }
+}
+
+  function renderPosts(posts, container) {
+    if (!posts || posts.length === 0) {
+      container.innerHTML = `
+        <div class="empty-state">
+          <i class="fa-regular fa-folder-open"></i>
+          <p>No posts here yet. Be the first to share something!</p>
+        </div>`;
+      return;
+    }
+
+    postsCache = {};
+    container.innerHTML = '';
+    posts.forEach((p, i) => {
+      postsCache[p.post_id] = p;
+
+      const card = document.createElement('div');
+      card.className = 'post-card';
+      card.style.animationDelay = `${i * 0.05}s`;
+
+      const initials = (p.username || '?').slice(0, 2).toUpperCase();
+      const typeClass = `type-${p.content_type || 'text'}`;
+      const isOwner = p.username === currentUsername;
+      const time = p.created_at ? new Date(p.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : '';
+
+      card.innerHTML = `
+        <div class="post-meta">
+          <div class="post-author">
+            <div class="post-avatar">${initials}</div>
+            <div class="post-author-info">
+              <span class="post-author-name">@${p.username || 'unknown'}</span>
+              <span class="post-time">${time}</span>
+            </div>
+          </div>
+          <span class="post-type-badge ${typeClass}">${p.content_type || 'text'}</span>
+        </div>
+        <div class="post-title-text">${escapeHtml(p.title || '')}</div>
+        <div class="post-content">${escapeHtml(p.post || '')}</div>
+        ${isOwner ? `
+        <div class="post-actions">
+          <button class="btn-action" onclick="openEditModal(${p.post_id})">
+            <i class="fa-solid fa-pen"></i> Edit
+          </button>
+          <button class="btn-action delete" onclick="openDeleteModal(${p.post_id})">
+            <i class="fa-solid fa-trash"></i> Delete
+          </button>
+        </div>` : ''}
+      `;
+      container.appendChild(card);
+    });
+  }
+
+  // ===== CREATE POST =====
+  async function handleCreatePost(e) {
+  e.preventDefault();
+
+  const btn = e.target.querySelector('button[type=submit]');
+  btn.textContent = 'Publishing…';
+  btn.disabled = true;
+
+  const content = document.getElementById('post-content').value.trim();
+  const title = document.getElementById('post-title').value.trim();
+  const type = document.getElementById('post-type').value;
+
+  if (!content) {
+    toast("Post cannot be empty", "error");
+    btn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Publish';
+    btn.disabled = false;
+    return;
+  }
+
+  try {
+    await api('/post', 'POST', {
+      content_type: type,
+      title: title,
+      post: content
+    });
+
+    toast('Post published!', 'success');
+    e.target.reset();
+    document.getElementById('char-counter').textContent = '0 / 500';
+    loadFeed();
+
+  } catch (err) {
+    toast(err.message, 'error');
+  } finally {
+    btn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Publish';
+    btn.disabled = false;
+  }
+}
+
+  function updateCharCount() {
+    const val = document.getElementById('post-content').value.length;
+    const counter = document.getElementById('char-counter');
+    counter.textContent = `${val} / 500`;
+    counter.classList.toggle('warn', val > 400);
+  }
+
+  // ===== EDIT =====
+  function openEditModal(id) {
+    const p = postsCache[id];
+    if (!p) return;
+    document.getElementById('edit-post-id').value = id;
+    document.getElementById('edit-type').value = p.content_type;
+    document.getElementById('edit-title').value = p.title;
+    document.getElementById('edit-content').value = p.post;
+    document.getElementById('edit-modal').style.display = 'flex';
+  }
+
+  function closeModal() {
+    document.getElementById('edit-modal').style.display = 'none';
+  }
+
+  function closeEditModal(e) {
+    if (e.target === document.getElementById('edit-modal')) closeModal();
+  }
+
+  async function handleUpdatePost(e) {
+    e.preventDefault();
+    const id = document.getElementById('edit-post-id').value;
+    const btn = e.target.querySelector('button[type=submit]');
+    btn.textContent = 'Saving…'; btn.disabled = true;
+
+    try {
+      await api(`/post/${id}?username=${encodeURIComponent(currentUsername)}`, 'PUT', {
+        content_type: document.getElementById('edit-type').value,
+        title: document.getElementById('edit-title').value.trim(),
+        post: document.getElementById('edit-content').value.trim()
+      });
+      toast('Post updated!', 'success');
+      closeModal();
+      loadFeed();
+    } catch (err) {
+      toast(err.message, 'error');
+    } finally {
+      btn.textContent = 'Save Changes'; btn.disabled = false;
+    }
+  }
+
+  // ===== DELETE =====
+  function openDeleteModal(id) {
+    pendingDeleteId = id;
+    document.getElementById('delete-modal').style.display = 'flex';
+  }
+
+  function closeDeleteModal(e) {
+    if (!e || e.target === document.getElementById('delete-modal')) {
+      document.getElementById('delete-modal').style.display = 'none';
+      pendingDeleteId = null;
+    }
+  }
+
+  async function confirmDelete() {
+    if (!pendingDeleteId) return;
+    try {
+      await api(`/post/${pendingDeleteId}?username=${encodeURIComponent(currentUsername)}`, 'DELETE');
+      toast('Post deleted.', 'info');
+      closeDeleteModal();
+      loadFeed();
+    } catch (err) {
+      toast(err.message, 'error');
+    }
+  }
+
+  // ===== TOAST =====
+  function toast(msg, type = 'info') {
+    const wrap = document.getElementById('toast-wrap');
+    const el = document.createElement('div');
+    el.className = `toast ${type}`;
+    const icon = type === 'success' ? 'fa-check-circle' : type === 'error' ? 'fa-circle-exclamation' : 'fa-circle-info';
+    el.innerHTML = `<i class="fa-solid ${icon}"></i> ${msg}`;
+    wrap.appendChild(el);
+    setTimeout(() => { el.style.opacity = '0'; el.style.transform = 'translateX(20px)'; el.style.transition = '0.3s'; setTimeout(() => el.remove(), 300); }, 3500);
+  }
+
+  // ===== HELPERS =====
+  function escapeHtml(str) {
+    return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  function escapeJs(str) {
+    return String(str).replace(/\\/g,'\\\\').replace(/'/g,"\\'").replace(/\n/g,'\\n');
+  }
+</script>
+</body>
+</html>
