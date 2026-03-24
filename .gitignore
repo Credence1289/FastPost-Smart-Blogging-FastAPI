@@ -1,0 +1,36 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+myenv/
+env/
+ENV/
+env.bak/
+venv.bak/
+
+# FastAPI / Environment
+.env
+.env.*
+*.env
+
+# PyCharm / JetBrains (keep project settings, ignore user-specific)
+.idea/workspace.xml
+.idea/tasks.xml
+.idea/usage.statistics.xml
+.idea/shelf/
+.idea/contentModel.xml
+.idea/.name
+.idea/compiler.xml
+.idea/jarRepositories.xml
+
+# Project files
+*.iml
+*.log
+.DS_Store
+Thumbs.db
+
+# Database (if any)
+*.db
+*.sqlite3

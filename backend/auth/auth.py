@@ -2,9 +2,14 @@ from datetime import timedelta, datetime
 from jose import jwt, JWTError
 import uuid
 import os
+from pathlib import Path
 from dotenv import load_dotenv
 
 load_dotenv()
+
+env_path = Path(__file__).resolve().parent.parent / ".env"
+load_dotenv(dotenv_path=env_path, override=True)
+
 SECRET_KEY = os.getenv("SECRET_KEY")
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRY_MIN = 30

@@ -3,13 +3,12 @@ from sqlalchemy.orm import Session
 from fastapi.security import OAuth2PasswordRequestForm
 from typing import Optional
 
-from models import UserIn, UserOut, PostCreate, PostShow
-from dbengine import engine
-from session import get_db, SessionLocal
-from hash import hash_password, verify_password
-from auth import create_access_token, decode_token
-from gate import current_user
-import db_models
+from backend.schema.models import UserIn, UserOut, PostCreate, PostShow
+from backend.db.session import get_db
+from backend.auth.hash import hash_password, verify_password
+from backend.auth.auth import create_access_token, decode_token
+from backend.auth.gate import current_user
+from backend.schema import db_models
 
 from fastapi.middleware.cors import CORSMiddleware
 
