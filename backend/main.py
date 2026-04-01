@@ -3,6 +3,8 @@ from sqlalchemy.orm import Session
 from fastapi.security import OAuth2PasswordRequestForm
 from typing import Optional
 
+from backend.db.dbengine import engine
+from backend.schema.db_models import Base
 from backend.schema.models import UserIn, UserOut, PostCreate, PostShow
 from backend.db.session import get_db
 from backend.auth.hash import hash_password, verify_password
@@ -16,6 +18,10 @@ from fastapi.middleware.cors import CORSMiddleware
 app = FastAPI()
 
 from fastapi.middleware.cors import CORSMiddleware
+
+print("Creating table....")
+Base.metadata.create_all(engine)
+print("Table created successfully")
 
 app.add_middleware(
     CORSMiddleware,
